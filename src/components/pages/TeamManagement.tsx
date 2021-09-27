@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, VFC } from "react";
-import { useDisclosure, Wrap, WrapItem } from "@chakra-ui/react";
-
+import { useDisclosure, Wrap, WrapItem, IconButton } from "@chakra-ui/react";
+import { AddIcon } from "@chakra-ui/icons";
 import { TeamCard } from "../organisms/team/TeamCard";
 import { GetAllTeams } from "../../hooks/GetAllTeams";
 import { TeamDetailModal } from "../organisms/modal/TeamDetailModal";
@@ -36,7 +36,20 @@ export const TeamManagement: VFC = memo(() => {
           ))}
         </Wrap>
       }
-      <TeamDetailModal isOpen={isOpen} onClose={onClose} team={selectedTeam} />
+      <IconButton
+        aria-label="view"
+        shadow="lg"
+        bg="white"
+        color="gray.400"
+        rounded="full"
+        icon={<AddIcon />}
+      />
+      <TeamDetailModal
+        isOpen={isOpen}
+        onClose={onClose}
+        team={selectedTeam}
+        teams={teams}
+      />
     </>
   );
 });
