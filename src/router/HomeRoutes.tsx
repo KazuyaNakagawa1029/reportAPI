@@ -1,6 +1,6 @@
 import { Home } from "../components/pages/Home";
 import { TeamManagement } from "../components/pages/TeamManagement";
-import { Test } from "../components/pages/Test";
+import { TeamAdd } from "../components/pages/TeamAdd";
 import { Page404 } from "../components/pages/Page404";
 
 export const homeRoutes = [
@@ -13,6 +13,11 @@ export const homeRoutes = [
     path: "team_management",
     exact: false,
     children: <TeamManagement />
+  },
+  {
+    path: "team_add",
+    exact: false,
+    children: <TeamAdd />
   },
   {
     path: "*",

@@ -18,12 +18,12 @@ export const useSelectTeam = () => {
 
   const onSelectTeam = useCallback((props: Props) => {
     const { id, teams, onOpen } = props;
-    const targetUser = teams.find((obj) => obj.id === id);
-    if (!targetUser) {
-      showMessage({ title: "ユーザーが見つかりません", status: "error" });
+    const targetTeam = teams.find((obj) => obj.id === id);
+    if (!targetTeam) {
+      showMessage({ title: "チームが見つかりません", status: "error" });
       return;
     } else {
-      setSelectedTeam(targetUser);
+      setSelectedTeam(targetTeam);
       onOpen();
     }
   }, []);

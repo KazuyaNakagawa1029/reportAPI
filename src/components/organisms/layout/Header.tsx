@@ -12,11 +12,12 @@ export const Header: VFC = memo(() => {
   const history = useHistory();
 
   const onClickHome = useCallback(() => history.push("/"), []);
-  const onClickUserManagement = useCallback(
+  const onClickTeamManagement = useCallback(
     () => history.push("/team_management"),
     []
   );
-  const onClickSetting = useCallback(() => history.push("/home/setting"), []);
+
+  const onClickAddTeam = useCallback(() => history.push("/team_add"), []);
 
   return (
     <>
@@ -46,7 +47,10 @@ export const Header: VFC = memo(() => {
           flexGrow={2}
         >
           <Box pr={4}>
-            <Link onClick={onClickUserManagement}>チーム一覧</Link>
+            <Link onClick={onClickTeamManagement}>チーム一覧</Link>
+          </Box>
+          <Box pr={4}>
+            <Link onClick={onClickAddTeam}>新規登録</Link>
           </Box>
         </Flex>
         <MenuIconButton onOpen={onOpen} />
@@ -55,8 +59,8 @@ export const Header: VFC = memo(() => {
         isOpen={isOpen}
         onClose={onClose}
         onClickHome={onClickHome}
-        onClickUserManagement={onClickUserManagement}
-        onClickSetting={onClickSetting}
+        onClickTeamManagement={onClickTeamManagement}
+        onClickAddTeam={onClickAddTeam}
       />
     </>
   );
