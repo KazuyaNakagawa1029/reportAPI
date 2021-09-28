@@ -76,6 +76,7 @@ export const TeamAdd: VFC = memo(() => {
               placeholder="入力開始日"
               value={inputStartDate}
               onChange={onChangeInputStartDate}
+              type="number"
             />
           </FormControl>
           <FormControl>
@@ -84,6 +85,7 @@ export const TeamAdd: VFC = memo(() => {
               placeholder="通知開始日"
               value={alertStartDays}
               onChange={onChangeAlertStartDays}
+              type="number"
             />
           </FormControl>
           <FormControl>

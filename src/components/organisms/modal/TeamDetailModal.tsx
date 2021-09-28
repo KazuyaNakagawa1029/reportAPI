@@ -120,6 +120,7 @@ export const TeamDetailModal: VFC<Props> = memo((props) => {
                   <Input
                     value={inputStartDate}
                     onChange={onChangeInputStartDate}
+                    type="number"
                   />
                 </FormControl>
                 <FormControl>
@@ -127,6 +128,7 @@ export const TeamDetailModal: VFC<Props> = memo((props) => {
                   <Input
                     value={alertStartDays}
                     onChange={onChangeAlertStartDays}
+                    type="number"
                   />
                 </FormControl>
                 <FormControl>
