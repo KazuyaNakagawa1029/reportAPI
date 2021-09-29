@@ -32,6 +32,11 @@ export const TeamManagement: VFC = memo(() => {
     getTeams();
   }, [getTeams]);
 
+  const onClosed = () => {
+    getTeams();
+    onClose();
+  };
+
   const onClickTeam = useCallback(
     (id: number) => {
       onSelectTeam({ id, teams, onOpen });
@@ -82,12 +87,7 @@ export const TeamManagement: VFC = memo(() => {
         </Wrap>
       }
 
-      <TeamDetailModal
-        isOpen={isOpen}
-        onClose={onClose}
-        team={selectedTeam}
-        teams={teams}
-      />
+      <TeamDetailModal isOpen={isOpen} onClose={onClosed} team={selectedTeam} />
     </>
   );
 });

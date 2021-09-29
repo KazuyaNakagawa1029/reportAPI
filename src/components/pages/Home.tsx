@@ -14,32 +14,35 @@ import {
   Table,
   Thead,
   Tbody,
-  Wrap,
   Tr,
   Th,
   Td,
-  IconButton,
-  Link
+  Wrap
 } from "@chakra-ui/react";
-import { useTable, useSortBy } from "react-table";
-import { AddIcon, TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
+import { useTable, useSortBy, Column } from "react-table";
+import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 
-import { TeamCard } from "../organisms/team/TeamCard";
 import { GetAllTeams } from "../../hooks/GetAllTeams";
-import { TeamDetailModal } from "../organisms/modal/TeamDetailModal";
 import { useSelectTeam } from "../../hooks/useSelectTeam";
 import { Team } from "../../types/api/team";
+import { TeamDetailModal } from "../organisms/modal/TeamDetailModal";
 
 export const Home: VFC = memo(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { getTeams, teams } = GetAllTeams();
   const { onSelectTeam, selectedTeam } = useSelectTeam();
   const [filterTeams, setFilterTeams] = useState<Array<Team>>(teams);
-  const [result, setResult] = useState(true);
+  const [filteredChar, setFilteredChar] = useState<String>("");
 
-  useEffect(() => {
-    getTeams();
-  }, [getTeams]);
+  const createFilteredTeams = (teams1: Team[], filteringChar: String) => {
+    if (filteringChar.length === 0) {
+      return teams1;
+    }
+
+    return teams1.filter((obj) => {
+      return obj.name.toLowerCase().search(filteringChar.toLowerCase()) !== -1;
+    });
+  };
 
   const onClickTeam = useCallback(
     (id: number) => {
@@ -48,111 +51,115 @@ export const Home: VFC = memo(() => {
     [teams, onSelectTeam, onOpen]
   );
 
-  const onFilter = (e: ChangeEvent<HTMLInputElement>) => {
-    const updateList = teams.filter((obj) => {
-      return obj.name.toLowerCase().search(e.target.value.toLowerCase()) !== -1;
-    });
-    setResult(updateList.length !== 0);
-    setFilterTeams(updateList);
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setFilteredChar(e.target.value);
   };
 
-  // function DataTable() {
-  //   const data = useMemo(
-  //     () => [
-  //      teams
-  //     ],
-  //     [],
-  //   )
+  const onClosed = () => {
+    getTeams();
+    onClose();
+  };
 
-  //   const columns = useMemo(
-  //     () => [
-  //       {
-  //         Header: "id",
-  //         accessor: "fromUnit",
-  //         isNumeric: true,
-  //       },
-  //       {
-  //         Header: "名前",
-  //         accessor: "fromUnit",
-  //       },
-  //       {
-  //         Header: "入力開始日",
-  //         accessor: "toUnit",
-  //         isNumeric: true,
-  //       },
-  //       {
-  //         Header: "通知開始日",
-  //         accessor: "factor",
-  //         isNumeric: true,
-  //       },
-  //       {
-  //         Header: "送信先",
-  //         accessor: "fromUnit",
-  //       },
-  //     ],
-  //     [],
-  //   )
+  useEffect(() => {
+    getTeams();
+  }, [getTeams]);
 
-  // const {
-  //   getTableProps,
-  //   getTableBodyProps,
-  //   headerGroups,
-  //   rows,
-  //   prepareRow,
-  // } = useTable({ columns, data }, useSortBy)
+  useEffect(() => {
+    const updateList = createFilteredTeams(teams, filteredChar);
+    setFilterTeams(updateList);
+  }, [teams, filteredChar]);
 
+  const columns: Column<Team>[] = useMemo(
+    () => [
+      {
+        Header: "id",
+        accessor: "id",
+        isNumeric: true
+      },
+      {
+        Header: "名前",
+        accessor: "name"
+      },
+      {
+        Header: "入力開始日",
+        accessor: "input_start_date",
+        isNumeric: true
+      },
+      {
+        Header: "通知開始日",
+        accessor: "alert_start_days",
+        isNumeric: true
+      }
+    ],
+    []
+  );
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow
+  } = useTable({ columns, data: filterTeams }, useSortBy);
+  console.log(rows);
   return (
     <>
-      {
-        <Wrap p={{ base: 4, md: 10 }}>
-          <InputGroup>
-            <Input
-              variant="outline"
-              colorScheme="red"
-              placeholder="検索"
-              onChange={onFilter}
-            />
-          </InputGroup>
-
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>名前</Th>
-                <Th>入力開始日</Th>
-                <Th>通知開始日</Th>
+      <Wrap p={{ base: 4, md: 10 }}>
+        <InputGroup>
+          <Input
+            variant="outline"
+            colorScheme="red"
+            placeholder="検索"
+            onChange={onChange}
+          />
+        </InputGroup>
+        <Table {...getTableProps()}>
+          <Thead>
+            {headerGroups.map((headerGroup) => (
+              <Tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <Th
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                    isNumeric={column.isNumeric}
+                  >
+                    {column.render("Header")}
+                    <span pl="4">
+                      {column.isSorted ? (
+                        column.isSortedDesc ? (
+                          <TriangleDownIcon aria-label="sorted descending" />
+                        ) : (
+                          <TriangleUpIcon aria-label="sorted ascending" />
+                        )
+                      ) : null}
+                    </span>
+                  </Th>
+                ))}
               </Tr>
-            </Thead>
-            <Tbody>
-              {(filterTeams.length === 0 && result === true
-                ? teams
-                : filterTeams
-              ).map((obj) => (
-                <Tr id={obj.id}>
-                  <Td>
-                    <Link onClick={onClickTeam}>{obj.name}</Link>
-                  </Td>
-                  <Td>{obj.input_start_date}</Td>
-                  <Td>{obj.alert_start_days}</Td>
+            ))}
+          </Thead>
+          <Tbody {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row);
+              return (
+                <Tr {...row.getRowProps()}>
+                  {row.cells.map((cell) => (
+                    <Td
+                      {...cell.getCellProps()}
+                      isNumeric={cell.column.isNumeric}
+                      onClick={() => onClickTeam(row.values.id)}
+                      _hover={{ cursor: "pointer", opacity: 0.6 }}
+                    >
+                      {cell.render("Cell")}
+                    </Td>
+                  ))}
                 </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </Wrap>
-      }
-      <IconButton
-        aria-label="view"
-        shadow="lg"
-        bg="white"
-        color="gray.400"
-        rounded="full"
-        icon={<AddIcon />}
-      />
-      <TeamDetailModal
-        isOpen={isOpen}
-        onClose={onClose}
-        team={selectedTeam}
-        teams={teams}
-      />
+              );
+            })}
+          </Tbody>
+        </Table>
+      </Wrap>
+      )
+      <TeamDetailModal isOpen={isOpen} onClose={onClosed} team={selectedTeam} />
     </>
   );
 });

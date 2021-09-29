@@ -10,13 +10,13 @@ export const GetAllTeams = () => {
 
   const [teams, setTeams] = useState<Array<Team>>([]);
 
-  const getTeams = useCallback(() => {
-    axios
-      .get<Array<Team>>("http://localhost:8080/teams")
-      .then((res) => setTeams(res.data))
-      .catch(() =>
-        showMessage({ title: "チーム取得に失敗しました", status: "error" })
-      );
+  const getTeams = useCallback(async () => {
+    try {
+      const res = await axios.get<Array<Team>>("http://localhost:8080/teams");
+      setTeams(res.data);
+    } catch (e) {
+      showMessage({ title: "チーム取得に失敗しました", status: "error" });
+    }
   }, []);
 
   return { getTeams, teams };

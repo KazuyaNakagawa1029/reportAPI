@@ -28,7 +28,7 @@ type Props = {
 };
 
 export const TeamDetailModal: VFC<Props> = memo((props) => {
-  const { isOpen, onClose, team, teams } = props;
+  const { isOpen, onClose, team } = props;
   const [id, setId] = useState("");
 
   const [name, setName] = useState("");
@@ -37,45 +37,34 @@ export const TeamDetailModal: VFC<Props> = memo((props) => {
   const [sendingMessageUrl, setSendingMessageUrl] = useState("");
   const { showMessage } = useMessage();
 
-  const onClickUpdate = () => {
+  const onClickUpdate = async () => {
     var result = window.confirm("こちらの内容で更新しますか？");
     if (result) {
-      axios
-        .put("http://localhost:8080/teams/" + id, {
+      try {
+        await axios.put("http://localhost:8080/teams/" + id, {
           name: name,
           input_start_date: Number(inputStartDate),
           alert_start_days: Number(alertStartDays),
           sending_message_url: sendingMessageUrl
-        })
-        .then(function (response) {
-          showMessage({ title: "更新しました。", status: "success" });
-          team.name = name;
-          team.input_start_date = Number(inputStartDate);
-          team.alert_start_days = Number(alertStartDays);
-          team.sending_message_url = sendingMessageUrl;
-          onClose();
-        })
-        .catch((error) => {
-          console.trace(error);
-          showMessage({ title: "更新に失敗しました", status: "error" });
         });
+        showMessage({ title: "更新しました。", status: "success" });
+        onClose();
+      } catch {
+        showMessage({ title: "更新に失敗しました", status: "error" });
+      }
     }
   };
 
-  const onClickDelete = () => {
+  const onClickDelete = async () => {
     var result = window.confirm("削除してもよろしいですか？");
     if (result) {
-      axios
-        .delete("http://localhost:8080/teams/" + id)
-        .then(function (response) {
-          showMessage({ title: "削除しました。", status: "success" });
-          var index = teams.indexOf(team);
-          teams.splice(index, 1);
-          onClose();
-        })
-        .catch(() =>
-          showMessage({ title: "削除に失敗しました", status: "error" })
-        );
+      try {
+        await axios.delete("http://localhost:8080/teams/" + id);
+        showMessage({ title: "削除しました。", status: "success" });
+        onClose();
+      } catch {
+        showMessage({ title: "削除に失敗しました", status: "error" });
+      }
     }
   };
 
